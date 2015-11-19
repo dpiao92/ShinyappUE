@@ -100,7 +100,7 @@ server<-function(input,output){
         if(length(words2) == 0){
             
             claiminfo2$xxtotal <- 1
-            claiminfo3 <- claiminfo2[,c(1,652,654,656,659,662:665,666,667,668,length(claiminfo2))]
+            claiminfo3 <- claiminfo2[,c("Category","ISN","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","xxtotal")]
             claiminfo4 <- subset(claiminfo3,claiminfo3[,"LOSSDATE"]>=input$dates[1] & claiminfo3[,"LOSSDATE"]<=input$dates[2]& claiminfo3[,"LOBNEW"] %in% c(lob)& claiminfo3[,"INSTCODENEW"] %in% c(inst_code)& claiminfo3[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo3[,"LossYN"] %in% c(lossyn))
             
             claiminfo4
@@ -109,7 +109,7 @@ server<-function(input,output){
         else if (length(words2)==1){
             
             claiminfo2$xxtotal <- rowsum(claiminfo2[, c(words2)],claiminfo2$Category)
-            claiminfo3 <- claiminfo2[,c(1,652,654,656,659,662:665,666,667,668,length(claiminfo2))]
+            claiminfo3 <- claiminfo2[,c("Category","ISN","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","xxtotal")]
             claiminfo4 <- subset(claiminfo3,claiminfo3[,"xxtotal"] >0 & claiminfo3[,"LOSSDATE"]>=input$dates[1] & claiminfo3[,"LOSSDATE"]<=input$dates[2] & claiminfo3[,"LOBNEW"] %in% c(lob)& claiminfo3[,"INSTCODENEW"] %in% c(inst_code)& claiminfo3[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo3[,"LossYN"] %in% c(lossyn))
             
             claiminfo4 
@@ -118,7 +118,7 @@ server<-function(input,output){
         
         else if(input$logic==1)
         {claiminfo2$xxtotal <-rowSums(claiminfo2[,c(words2)])
-        claiminfo3 <- claiminfo2[,c(1,652,654,656,659,662:665,666,667,668,length(claiminfo2))]
+        claiminfo3 <- claiminfo2[,c("Category","ISN","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","xxtotal")]
         claiminfo4 <- subset(claiminfo3,claiminfo3[,"xxtotal"] >0 & claiminfo3[,"LOSSDATE"]>=input$dates[1] & claiminfo3[,"LOSSDATE"]<=input$dates[2] & claiminfo3[,"LOBNEW"] %in% c(lob)& claiminfo3[,"INSTCODENEW"] %in% c(inst_code)& claiminfo3[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo3[,"LossYN"] %in% c(lossyn))
         
         
