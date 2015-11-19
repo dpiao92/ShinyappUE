@@ -128,7 +128,7 @@ server<-function(input,output){
         {claiminfo3 <- claiminfo2[,c("Category","ISN","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN")]
         claiminfo6 <- claiminfo2[,c(words2)]
         claiminfo6[(claiminfo6>1)] <-1
-        claiminfo3$xxtotal <-rowSums(claiminfo2[,c(words2)])
+        claiminfo3$xxtotal <-rowSums(claiminfo6[,c(words2)])
         claiminfo4 <- subset(claiminfo3,claiminfo3[,"xxtotal"] ==length(words2) & claiminfo3[,"LOSSDATE"]>=input$dates[1] & claiminfo3[,"LOSSDATE"]<=input$dates[2] & claiminfo3[,"LOBNEW"] %in% c(lob) & claiminfo3[,"INSTCODENEW"] %in% c(inst_code)& claiminfo3[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo3[,"LossYN"] %in% c(lossyn))
         
         claiminfo4}
