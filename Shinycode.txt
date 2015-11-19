@@ -4,7 +4,7 @@ library(DT)
 library(ggplot2)
 library(scales)
 
-claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/Claims_DTM_PDOX.csv")
+claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/Claims_DTM_PDOX999.csv")
 claiminfo2$LOSSDATE<-as.Date(claiminfo2[,"LOSSDATE"],"%m/%d/%y")
 claiminfo2$LIMIT<-paste("$",format(claiminfo2$LIMIT, big.mark=","),sep="")
 claiminfo2$RETENTION<-paste("$",format(claiminfo2$RETENTION, big.mark=","),sep="")
@@ -18,7 +18,6 @@ claiminfo2$LossYN <- ifelse(claiminfo2$TOTALINCURRED!=0,"Y","N")
 ui<-fluidPage(
     
     tags$head(
-        
         tags$style(HTML("
                         .shiny-output-error-ERRORmessage {
                         font-size: 20px;
