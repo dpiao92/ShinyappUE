@@ -40,9 +40,9 @@ ui<-fluidPage(
                          choices = list("Or" = 1, "And" = 2), 
                          selected = 1),
             
-            dateRangeInput("dates", label = "Date range", start = "01-01-2010", end = "12-31-2014", format = "mm/dd/yy"),
+            dateRangeInput("dates", label = "Loss Date range", start = "01-01-2010", end = "12-31-2014", format = "mm/dd/yy"),
             
-        
+            
             checkboxGroupInput("checkboxLOB", label = "Line of Business", 
                                c("ELL"="ELL","CGL" = "CGL","GLX/U"="GLX/U","BLX"="BLX","EBL"="EBL","LPL"="LPL","Public Schools"="Public Schools"),selected = c("ELL","CGL","GLX/U","BLX","EBL","LPL","Public Schools"),inline = TRUE),
             checkboxGroupInput("checkboxICode", label = "Institution Code", 
@@ -197,12 +197,16 @@ server<-function(input,output){
         ggplot(losses, aes(x=Category, y=x)) + geom_area(fill="blue",alpha=.4) +geom_point(color="blue",size=3) + geom_line(color="blue",size=1)+labs(title ="Incurred by Year", x ="Loss Year" , y ="Total Incurred")+scale_y_continuous(limits = c(0, NA),labels=dollar)
     })
     
+    datasetInputdl <- reactive({
+        claiminfo4 <-datasetInput()
+        claiminfo4[ , -which(names(claiminfo4) %in% c("LOBNEW","INSTCODENEW","LossYN","xxtotal"))]})
+    
     output$downloadData <- downloadHandler(
         filename = function() {
             paste('data_', Sys.Date(), '.csv', sep='')
         },
         content = function(file) {
-            write.csv(datasetInput(), file)
+            write.csv(datasetInputdl(), file)
         }
     )    
 }
