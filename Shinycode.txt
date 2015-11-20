@@ -4,7 +4,7 @@ library(DT)
 library(ggplot2)
 library(scales)
 
-claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/Claims_DTM_PDOX999.csv")
+claiminfo2 <-read.csv("X:/Claims_Project/Claims_DTM_PDOX999.csv")
 claiminfo2$LOSSDATE<-as.Date(claiminfo2[,"LOSSDATE"],"%m/%d/%y")
 claiminfo2$LIMIT<-paste("$",format(claiminfo2$LIMIT, big.mark=","),sep="")
 claiminfo2$RETENTION<-paste("$",format(claiminfo2$RETENTION, big.mark=","),sep="")
@@ -44,11 +44,11 @@ ui<-fluidPage(
             
             
             checkboxGroupInput("checkboxLOB", label = "Line of Business", 
-                               c("ELL"="ELL","CGL" = "CGL","GLX/U"="GLX/U","BLX"="BLX","EBL"="EBL","LPL"="LPL","Public Schools"="Public Schools"),selected = c("ELL","CGL","GLX/U","BLX","EBL","LPL","Public Schools"),inline = TRUE),
+                               c("ELL"="ELL","CGL" = "CGL","GLX/U"="GLX/U","BLX"="BLX","EBL"="EBL","LPL"="LPL","Public Schools"="Public Schools"),selected = c("ELL","CGL","GLX/U","BLX","EBL","LPL","Public Schools"),inline = FALSE),
             checkboxGroupInput("checkboxICode", label = "Institution Code", 
-                               c("IN"="IN","O" = "O","PS/SD"="PS/SD","U4/R4"="U4/R4","U2/R2"="U2/R2"),selected = c("IN","O","PS/SD","U4/R4","U2/R2"),inline = TRUE),
+                               c("IN"="IN","O" = "O","PS/SD"="PS/SD","U4/R4"="U4/R4","U2/R2"="U2/R2"),selected = c("IN","O","PS/SD","U4/R4","U2/R2"),inline = FALSE),
             checkboxGroupInput("checkboxInc_Claim", label = "Claim/Incident", 
-                               c("Claim" = "C","Incident"="I"),selected = c("C","I"),inline = TRUE),
+                               c("Claim" = "C","Incident"="I"),selected = c("C","I"),inline = FALSE),
             checkboxGroupInput("checkboxLoss", label = "Incurred Loss?", 
                                c("Yes" = "Y","No"="N"),selected = c("Y","N"),inline = TRUE),
             downloadButton('downloadData', 'Download')
@@ -138,10 +138,14 @@ server<-function(input,output){
     
     output$table <- renderDataTable({
         claiminfo<-datasetInput()
-        claiminfo$TOTALINCURRED<-paste("$",format(claiminfo$TOTALINCURRED, big.mark=","),sep="")
         names(claiminfo)[c(1,3,4,5,6:9)] <- c("Claim Number","Line of Business","Loss Date","Total Incurred", "Limit", "Retention", "Institution Code", "Incident or Claim")
+        
+        claiminfo[,"Claim Number"] <- as.character(claiminfo[,"Claim Number"])
+        claiminfo[,"Total Incurred"] <- as.numeric(claiminfo[,"Total Incurred"])
+        claiminfo[,"Total Incurred"] <- dollar(claiminfo[,"Total Incurred"])
+        
         claiminfo
-    },rownames = FALSE,filter = 'top',options = list(
+    },class = 'display',rownames = FALSE,filter = list(position = 'top',clear = FALSE),options = list(
         columnDefs = list(list(className = 'dt-center',targets = 1:8),list(visible=FALSE, targets=9:12) 
         )))
     
@@ -182,7 +186,7 @@ server<-function(input,output){
         
         display.table
         
-    }, rownames = c("Number of Claims","Total Incurred"),options = list(searching = FALSE,paging = FALSE,bInfo = 0,
+    }, rownames = c("Number of Claims","Total Incurred"),options = list(searching = FALSE,paging = FALSE,bInfo = 0, autoWidth = TRUE,
                                                                         columnDefs = list(list(className = 'dt-center',targets = 1:8))))
     
     output$plot1 <- renderPlot({
