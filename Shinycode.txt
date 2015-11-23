@@ -4,7 +4,7 @@ library(DT)
 library(ggplot2)
 library(scales)
 
-claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/Claims_DTM_PDOX999.csv")
+claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/claiminfo2bin.csv")
 claiminfo2$LOSSDATE<-as.Date(claiminfo2[,"LOSSDATE"],"%m/%d/%y")
 claiminfo2$LIMIT<-paste("$",format(claiminfo2$LIMIT, big.mark=","),sep="")
 claiminfo2$RETENTION<-paste("$",format(claiminfo2$RETENTION, big.mark=","),sep="")
@@ -99,7 +99,7 @@ server<-function(input,output){
         if(length(words2) == 0){
             
             claiminfo2$xxtotal <- 1
-            claiminfo3 <- claiminfo2[,c("Category","ISN","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","xxtotal")]
+            claiminfo3 <- claiminfo2[,c("Category","ISN","SCHOOLNAME","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","xxtotal")]
             claiminfo4 <- subset(claiminfo3,claiminfo3[,"LOSSDATE"]>=input$dates[1] & claiminfo3[,"LOSSDATE"]<=input$dates[2]& claiminfo3[,"LOBNEW"] %in% c(lob)& claiminfo3[,"INSTCODENEW"] %in% c(inst_code)& claiminfo3[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo3[,"LossYN"] %in% c(lossyn))
             
             claiminfo4
@@ -108,7 +108,7 @@ server<-function(input,output){
         else if (length(words2)==1){
             
             claiminfo2$xxtotal <- rowsum(claiminfo2[, c(words2)],claiminfo2$Category)
-            claiminfo3 <- claiminfo2[,c("Category","ISN","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","xxtotal")]
+            claiminfo3 <- claiminfo2[,c("Category","ISN","SCHOOLNAME","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","xxtotal")]
             claiminfo4 <- subset(claiminfo3,claiminfo3[,"xxtotal"] >0 & claiminfo3[,"LOSSDATE"]>=input$dates[1] & claiminfo3[,"LOSSDATE"]<=input$dates[2] & claiminfo3[,"LOBNEW"] %in% c(lob)& claiminfo3[,"INSTCODENEW"] %in% c(inst_code)& claiminfo3[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo3[,"LossYN"] %in% c(lossyn))
             
             claiminfo4 
@@ -117,14 +117,14 @@ server<-function(input,output){
         
         else if(input$logic==1)
         {claiminfo2$xxtotal <-rowSums(claiminfo2[,c(words2)])
-        claiminfo3 <- claiminfo2[,c("Category","ISN","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","xxtotal")]
+        claiminfo3 <- claiminfo2[,c("Category","ISN","SCHOOLNAME","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","xxtotal")]
         claiminfo4 <- subset(claiminfo3,claiminfo3[,"xxtotal"] >0 & claiminfo3[,"LOSSDATE"]>=input$dates[1] & claiminfo3[,"LOSSDATE"]<=input$dates[2] & claiminfo3[,"LOBNEW"] %in% c(lob)& claiminfo3[,"INSTCODENEW"] %in% c(inst_code)& claiminfo3[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo3[,"LossYN"] %in% c(lossyn))
         
         
         claiminfo4 }
         
         else
-        {claiminfo3 <- claiminfo2[,c("Category","ISN","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN")]
+        {claiminfo3 <- claiminfo2[,c("Category","ISN","SCHOOLNAME","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN")]
         claiminfo6 <- claiminfo2[,c(words2)]
         claiminfo6[(claiminfo6>1)] <-1
         claiminfo3$xxtotal <-rowSums(claiminfo6[,c(words2)])
@@ -138,7 +138,7 @@ server<-function(input,output){
     
     output$table <- renderDataTable({
         claiminfo<-datasetInput()
-        names(claiminfo)[c(1,3,4,5,6:9)] <- c("Claim Number","Line of Business","Loss Date","Total Incurred", "Limit", "Retention", "Institution Code", "Incident or Claim")
+        names(claiminfo)[c(1,3:10)] <- c("Claim Number","Institution Name","Line of Business","Loss Date","Total Incurred", "Limit", "Retention", "Institution Code", "Incident or Claim")
         
         claiminfo[,"Claim Number"] <- as.character(claiminfo[,"Claim Number"])
         claiminfo[,"Total Incurred"] <- as.numeric(claiminfo[,"Total Incurred"])
@@ -203,10 +203,10 @@ server<-function(input,output){
     
     datasetInputdl <- reactive({
         claiminfo4 <-datasetInput()
-        names(claiminfo4)[c(1,3,4,5,6:9)] <- c("Claim Number","Line of Business","Loss Date","Total Incurred", "Limit",               "Retention", "Institution Code", "Incident or Claim")
+        names(claiminfo)[c(1,3:10)] <- c("Claim Number","Institution Name","Line of Business","Loss Date","Total Incurred", "Limit", "Retention", "Institution Code", "Incident or Claim")
         claiminfo4[ , -which(names(claiminfo4) %in% c("LOBNEW","INSTCODENEW","LossYN","xxtotal"))]
-        })
-        
+    })
+    
     
     output$downloadData <- downloadHandler(
         filename = function() {
