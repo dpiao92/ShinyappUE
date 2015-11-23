@@ -4,7 +4,7 @@ library(DT)
 library(ggplot2)
 library(scales)
 
-claiminfo2 <-read.csv("X:/Claims_Project/Claims_DTM_PDOX999.csv")
+claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/Claims_DTM_PDOX999.csv")
 claiminfo2$LOSSDATE<-as.Date(claiminfo2[,"LOSSDATE"],"%m/%d/%y")
 claiminfo2$LIMIT<-paste("$",format(claiminfo2$LIMIT, big.mark=","),sep="")
 claiminfo2$RETENTION<-paste("$",format(claiminfo2$RETENTION, big.mark=","),sep="")
@@ -203,6 +203,7 @@ server<-function(input,output){
     
     datasetInputdl <- reactive({
         claiminfo4 <-datasetInput()
+        names(claiminfo4)[c(1,3,4,5,6:9)] <- c("Claim Number","Line of Business","Loss Date","Total Incurred", "Limit",               "Retention", "Institution Code", "Incident or Claim")
         claiminfo4[ , -which(names(claiminfo4) %in% c("LOBNEW","INSTCODENEW","LossYN","xxtotal"))]})
     
     output$downloadData <- downloadHandler(
