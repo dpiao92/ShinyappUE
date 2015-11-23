@@ -144,9 +144,9 @@ server<-function(input,output){
         claiminfo[,"Total Incurred"] <- as.numeric(claiminfo[,"Total Incurred"])
         claiminfo[,"Total Incurred"] <- dollar(claiminfo[,"Total Incurred"])
         
-        claiminfo
+        claiminfo[ , -which(names(claiminfo) %in% c("LOBNEW","INSTCODENEW","LossYN","xxtotal"))]
     },class = 'display',rownames = FALSE,filter = list(position = 'top',clear = FALSE),options = list(
-        columnDefs = list(list(className = 'dt-center',targets = 1:8),list(visible=FALSE, targets=9:12) 
+        columnDefs = list(list(className = 'dt-center',targets =1:9) 
         )))
     
     
