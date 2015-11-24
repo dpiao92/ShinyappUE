@@ -6,7 +6,7 @@ library(scales)
 library(data.table)
 
 
-claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/claiminfo2bin.csv")
+claiminfo2 <-read.csv("X:/Claims_Project/claiminfo2bin.csv")
 claiminfo2$LOSSDATE<-as.Date(claiminfo2[,"LOSSDATE"],"%m/%d/%y")
 claiminfo2$LIMIT<-paste("$",format(claiminfo2$LIMIT, big.mark=","),sep="")
 claiminfo2$RETENTION<-paste("$",format(claiminfo2$RETENTION, big.mark=","),sep="")
@@ -95,7 +95,7 @@ server<-function(input,output){
         )
         
         if(length(words2) == 0){
-        
+            
             claiminfo2 <- claiminfo2[,c("Category","ISN","SCHOOLNAME","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN")]
             
             
@@ -127,7 +127,7 @@ server<-function(input,output){
         { claiminfo <- claiminfo2[,c(words2)]
         claiminfo[(claiminfo>1)] <-1
         claiminfo2$xxtotal <-rowSums(claiminfo[,c(words2)])
-            claiminfo2 <- claiminfo2[,c("Category","ISN","SCHOOLNAME","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","xxtotal")]
+        claiminfo2 <- claiminfo2[,c("Category","ISN","SCHOOLNAME","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","xxtotal")]
         claiminfo2 <- subset(claiminfo2,claiminfo2[,"xxtotal"] ==length(words2) & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob) & claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn))
         
         claiminfo2}
@@ -147,16 +147,15 @@ server<-function(input,output){
             need(length(claiminfo[,"Total Incurred"]) != 0, "No Data available for the selected criteria"),
             errorClass = "ERRORmessage"
         )
-        claiminfo[,"Total Incurred"] <- dollar(claiminfo[,"Total Incurred"])
         
         claiminfo[ , -which(names(claiminfo) %in% c("LOBNEW","INSTCODENEW","LossYN","xxtotal"))]
     },class = 'display',rownames = FALSE,filter = list(position = 'top',clear = FALSE),
     options = list(autoWidth = TRUE,
-                   #rowCallback = JS(
-                   #"function(row, data) {",
-                   #"var num = '$' + data[6].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',');",
-                   #"$('td:eq(6)', row).html(num);",
-                   #"}"),
+                   rowCallback = JS(
+                   "function(row, data) {",
+                   "var num = '$' + data[6].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',');",
+                   "$('td:eq(6)', row).html(num);",
+                   "}"),
                    columnDefs = list(list(className = 'dt-center',targets ="_all") 
                    )))
     
