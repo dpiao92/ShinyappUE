@@ -4,7 +4,7 @@ library(DT)
 library(ggplot2)
 library(scales)
 
-claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/claiminfo2bin.csv")
+claiminfo2 <-read.csv("X:/Claims_Project/claiminfo2bin.csv")
 claiminfo2$LOSSDATE<-as.Date(claiminfo2[,"LOSSDATE"],"%m/%d/%y")
 claiminfo2$LIMIT<-paste("$",format(claiminfo2$LIMIT, big.mark=","),sep="")
 claiminfo2$RETENTION<-paste("$",format(claiminfo2$RETENTION, big.mark=","),sep="")
@@ -40,7 +40,7 @@ ui<-fluidPage(
                          choices = list("Or" = 1, "And" = 2), 
                          selected = 1),
             
-            dateRangeInput("dates", label = "Loss Date range", start = "01-01-2010", end = "12-31-2014", format = "mm/dd/yy"),
+            dateRangeInput("dates", label = "Loss Date range", start = "01-01-2010", end = "12-31-2014", format = "mm/dd/yyyy"),
             
             
             checkboxGroupInput("checkboxLOB", label = "Line of Business", 
@@ -145,8 +145,14 @@ server<-function(input,output){
         claiminfo[,"Total Incurred"] <- dollar(claiminfo[,"Total Incurred"])
         
         claiminfo[ , -which(names(claiminfo) %in% c("LOBNEW","INSTCODENEW","LossYN","xxtotal"))]
-    },class = 'display',rownames = FALSE,filter = list(position = 'top',clear = FALSE),options = list(
-        columnDefs = list(list(className = 'dt-center',targets =1:9) 
+    },class = 'display',rownames = FALSE,filter = list(position = 'top',clear = FALSE),
+    options = list(
+        #rowCallback = JS(
+        #"function(row, data) {",
+        #"var num = '$' + data[6].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',');",
+        #"$('td:eq(6)', row).html(num);",
+        #"}"),
+        columnDefs = list(list(className = 'dt-center',targets ="_all") 
         )))
     
     
