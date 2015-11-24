@@ -3,6 +3,8 @@ library(shiny)
 library(DT)
 library(ggplot2)
 library(scales)
+library(data.table)
+
 
 claiminfo2 <-read.csv("X:/Claims_Project/claiminfo2bin.csv")
 claiminfo2$LOSSDATE<-as.Date(claiminfo2[,"LOSSDATE"],"%m/%d/%y")
