@@ -153,8 +153,8 @@ server<-function(input,output){
     options = list(autoWidth = TRUE,
                    rowCallback = JS(
                    "function(row, data) {",
-                   "var num = '$' + data[6].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',');",
-                   "$('td:eq(6)', row).html(num);",
+                   "var num = '$' + data[5].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',');",
+                   "$('td:eq(5)', row).html(num);",
                    "}"),
                    columnDefs = list(list(className = 'dt-center',targets ="_all") 
                    )))
