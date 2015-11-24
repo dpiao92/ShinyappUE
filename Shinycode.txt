@@ -4,7 +4,7 @@ library(DT)
 library(ggplot2)
 library(scales)
 
-claiminfo2 <-read.csv("X:/Claims_Project/claiminfo2bin.csv")
+claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/claiminfo2bin.csv")
 claiminfo2$LOSSDATE<-as.Date(claiminfo2[,"LOSSDATE"],"%m/%d/%y")
 claiminfo2$LIMIT<-paste("$",format(claiminfo2$LIMIT, big.mark=","),sep="")
 claiminfo2$RETENTION<-paste("$",format(claiminfo2$RETENTION, big.mark=","),sep="")
@@ -71,11 +71,7 @@ server<-function(input,output){
         inc_claim <- unlist(str_split(input$checkboxInc_Claim,","))
         lossyn <- unlist(str_split(input$checkboxLoss,","))
         
-        for (i in 1:length(words2)) {
-            trimwords <- str_trim(words2[i])
-            words2[i] <- trimwords
-        }
-        
+      
         validate(
             need(lob != "","Please select at least one Line of Business"),
             errorClass = "ERRORmessage"
@@ -146,7 +142,7 @@ server<-function(input,output){
         
         claiminfo[ , -which(names(claiminfo) %in% c("LOBNEW","INSTCODENEW","LossYN","xxtotal"))]
     },class = 'display',rownames = FALSE,filter = list(position = 'top',clear = FALSE),
-    options = list(
+    options = list(autoWidth = TRUE,
         #rowCallback = JS(
         #"function(row, data) {",
         #"var num = '$' + data[6].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',');",
