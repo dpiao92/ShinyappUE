@@ -6,7 +6,7 @@ library(scales)
 library(data.table)
 
 
-claiminfo2 <-read.csv("X:/Claims_Project/claiminfo2bin.csv")
+claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/claiminfo2bin.csv")
 claiminfo2$LOSSDATE<-as.Date(claiminfo2[,"LOSSDATE"],"%m/%d/%y")
 claiminfo2$LIMIT<-paste("$",format(claiminfo2$LIMIT, big.mark=","),sep="")
 claiminfo2$RETENTION<-paste("$",format(claiminfo2$RETENTION, big.mark=","),sep="")
@@ -227,5 +227,9 @@ server<-function(input,output){
         }
     )    
 }
+
+#ClaimsApp<-shinyApp(ui = ui, server = server)
+#runApp(ClaimsApp, launch.browser=FALSE, port = 3942,host = getOption("0.0.0.0"))
+
 
 shinyApp(ui = ui, server = server) 
