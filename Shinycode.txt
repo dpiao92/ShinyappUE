@@ -38,6 +38,11 @@ ui<-fluidPage(
                            multiple = TRUE
             ),
             
+            downloadButton('downloadData', 'Download'),
+            
+            br(),
+            br(),
+            
             radioButtons("logic", label = "Word Logic",
                          choices = list("Or" = 1, "And" = 2), 
                          selected = 1),
@@ -53,8 +58,8 @@ ui<-fluidPage(
                                c("Claim" = "C","Incident"="I"),selected = c("C","I"),inline = FALSE),
             checkboxGroupInput("checkboxLoss", label = "Incurred Loss?", 
                                c("Yes" = "Y","No"="N"),selected = c("Y","N"),inline = TRUE),
-            downloadButton('downloadData', 'Download')
-            ,width = 3),
+            
+            width = 3),
         mainPanel(
             tabsetPanel(type = "tabs", 
                         tabPanel("List of Claims", dataTableOutput(outputId = "table")), 
@@ -137,10 +142,12 @@ server<-function(input,output){
     
     
     output$table <- renderDataTable({
+        br()
         claiminfo<-datasetInput()
         names(claiminfo)[c(1,3:10)] <- c("Claim Number","Institution Name","Line of Business","Loss Date","Total Incurred", "Limit", "Retention", "Institution Code", "Incident or Claim")
         
         claiminfo[,"Claim Number"] <- as.character(claiminfo[,"Claim Number"])
+        claiminfo[,"ISN"] <- as.character(claiminfo[,"ISN"])
         claiminfo[,"Total Incurred"] <- as.numeric(claiminfo[,"Total Incurred"])
         
         validate(
@@ -151,11 +158,12 @@ server<-function(input,output){
         claiminfo[ , -which(names(claiminfo) %in% c("LOBNEW","INSTCODENEW","LossYN","xxtotal"))]
     },class = 'display',rownames = FALSE,filter = list(position = 'top',clear = FALSE),
     options = list(autoWidth = TRUE,
+                   dom = 'ltipr',
                    rowCallback = JS(
-                   "function(row, data) {",
-                   "var num = '$' + data[5].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',');",
-                   "$('td:eq(5)', row).html(num);",
-                   "}"),
+                       "function(row, data) {",
+                       "var num = '$' + data[5].toString().replace(/\\B(?=(\\d{3})+(?!\\d))/g, ',');",
+                       "$('td:eq(5)', row).html(num);",
+                       "}"),
                    columnDefs = list(list(className = 'dt-center',targets ="_all") 
                    )))
     
