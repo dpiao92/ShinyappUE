@@ -238,7 +238,7 @@ server<-function(input,output){
     datasetInputdl <- reactive({
         claiminfo4 <-datasetInput()
         names(claiminfo4)[c(1,3:10)] <- c("Claim Number","Institution Name","Line of Business","Loss Date","Total Incurred", "Limit", "Retention", "Institution Code", "Incident or Claim")
-        claiminfo4[ , -which(names(claiminfo4) %in% c("LOBNEW","INSTCODENEW","LossYN","xxtotal","Linked"))]
+        claiminfo4[ , -which(names(claiminfo4) %in% c("LOBNEW","INSTCODENEW","LossYN","xxtotal"))]
     })
     
     
