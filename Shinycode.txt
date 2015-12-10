@@ -5,6 +5,7 @@ library(ggplot2)
 library(scales)
 library(data.table)
 library(dplyr)
+library(shinyBS)
 
 claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/claiminfo2bin.csv")
 linked <- read.csv("X:/Actuarial/Claims_Project/Excess_to_primary.csv")
@@ -41,6 +42,12 @@ ui<-fluidPage(
                            label = "Enter search terms",choices = colnames(claiminfo2[,2:dim(claiminfo2)[[2]]]), 
                            multiple = TRUE
             ),
+            
+            actionButton("button1", icon("info")),
+            
+            
+            bsPopover("button1","Help","If the word you are interested in is not available, please contact Greg Peed or Dan Piao in the Actuarial Department",placement = "bottom",trigger = "click",options = list(container = "body")),
+          
             
             downloadButton('downloadData', 'Download'),
             
