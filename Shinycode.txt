@@ -114,8 +114,8 @@ server<-function(input,output){
             
             claiminfo2 <- claiminfo2[,c("Category","ISN","SCHOOLNAME","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","Linked")]
             
+            claiminfo3 <- claiminfo2[ which(claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2]& claiminfo2[,"LOBNEW"] %in% c(lob)& claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c (inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn)),]
             
-            claiminfo3 <- subset(claiminfo2,claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2]& claiminfo2[,"LOBNEW"] %in% c(lob)& claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn))
             
             claiminfo3 <- rbind.data.frame(claiminfo3, claiminfo2[claiminfo2$Category %in% claiminfo3$Linked,])
             claiminfo3 %>% distinct
@@ -127,7 +127,10 @@ server<-function(input,output){
             
             claiminfo2$xxtotal <- rowsum(claiminfo2[, c(words2)],claiminfo2$Category)
             claiminfo2 <- claiminfo2[,c("Category","ISN","SCHOOLNAME","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","Linked","xxtotal")]
-            claiminfo3 <- subset(claiminfo2,claiminfo2[,"xxtotal"] >0 & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob)& claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn))
+            
+            claiminfo3 <- claiminfo2[which(claiminfo2[,"xxtotal"] >0 & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob)& claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn)),]
+            
+            #claiminfo3 <- subset(claiminfo2,claiminfo2[,"xxtotal"] >0 & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob)& claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn))
             
             claiminfo3 <- rbind.data.frame(claiminfo3, claiminfo2[claiminfo2$Category %in% claiminfo3$Linked,])
             
@@ -140,7 +143,10 @@ server<-function(input,output){
         else if(input$logic==1)
         {claiminfo2$xxtotal <-rowSums(claiminfo2[,c(words2)])
         claiminfo2 <- claiminfo2[,c("Category","ISN","SCHOOLNAME","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","Linked","xxtotal")]
-        claiminfo3 <- subset(claiminfo2,claiminfo2[,"xxtotal"] >0 & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob)& claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn))
+        
+        claiminfo3 <- claiminfo2[which(claiminfo2[,"xxtotal"] >0 & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob)& claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn)),]
+        
+       # claiminfo3 <- subset(claiminfo2,claiminfo2[,"xxtotal"] >0 & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob)& claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn))
         
         claiminfo3 <- rbind.data.frame(claiminfo3, claiminfo2[claiminfo2$Category %in% claiminfo3$Linked,])
         
@@ -152,7 +158,10 @@ server<-function(input,output){
         claiminfo[(claiminfo>1)] <-1
         claiminfo2$xxtotal <-rowSums(claiminfo[,c(words2)])
         claiminfo2 <- claiminfo2[,c("Category","ISN","SCHOOLNAME","LINEOFBUSINESS","LOSSDATE","TOTALINCURRED","LIMIT","RETENTION","INSTCODE","INCIDENTORCLAIM","LOBNEW","INSTCODENEW","LossYN","Linked","xxtotal")]
-        claiminfo3 <- subset(claiminfo2,claiminfo2[,"xxtotal"] ==length(words2) & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob) & claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn))
+        
+        claiminfo3 <- claiminfo2[which(claiminfo2[,"xxtotal"] ==length(words2) & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob) & claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn)),]
+        
+        #claiminfo3 <- subset(claiminfo2,claiminfo2[,"xxtotal"] ==length(words2) & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob) & claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn))
         
         claiminfo3 <- rbind.data.frame(claiminfo3, claiminfo2[claiminfo2$Category %in% claiminfo3$Linked,])
         claiminfo3 %>% distinct()
