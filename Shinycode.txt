@@ -16,7 +16,7 @@ claiminfo2$LOBNEW <- claiminfo2[,"LINEOFBUSINESS"]
 claiminfo2$LOBNEW <- ifelse(claiminfo2$LINEOFBUSINESS %in% c("DAL","DBC","DGL","SAF","SAL","SBC","SBO","SCF","SGF","SGL","SOF"),
                             "Public Schools",ifelse(claiminfo2$LINEOFBUSINESS %in% c("CGX","GLF","GLU","GLX"),"GLX/U",paste(claiminfo2$LINEOFBUSINESS)))
 claiminfo2$INSTCODENEW <- claiminfo2[,"INSTCODE"]
-claiminfo2$INSTCODENEW <- ifelse(claiminfo2$INSTCODE %in% c("PS","SD"),"PS/SD",ifelse(claiminfo2$INSTCODE %in% c("U4","R4"),"U4/R4",ifelse(claiminfo2$INSTCODE %in% c("U2","R2"),"U2/R2",paste(claiminfo2$INSTCODE))))
+claiminfo2$INSTCODENEW <- ifelse(claiminfo2$INSTCODE %in% c("PS","SD"),"PS/SD",ifelse(claiminfo2$INSTCODE %in% c("U2","R2"),"U2/R2",paste(claiminfo2$INSTCODE)))
 claiminfo2$LossYN <- ifelse(claiminfo2$TOTALINCURRED!=0,"Y","N")
 
 claiminfo2$Linked <- linked$CGL_ID[match(claiminfo2$Category,linked$GLX_ID)]
@@ -32,10 +32,11 @@ ui<-fluidPage(
                         
                         }
                         "))),
+    pageWithSidebar(
+        headerPanel(
+                tags$span(style = "color:blue", tags$h5(textOutput(outputId = "dateinfo")))),
     
-    
-    
-    sidebarLayout(
+
         sidebarPanel(
             
             selectizeInput(inputId = "words1",
@@ -47,7 +48,7 @@ ui<-fluidPage(
             
             
             bsPopover("button1","Help","If the word you are interested in is not available, please contact Greg Peed or Dan Piao in the Actuarial Department",placement = "bottom",trigger = "click",options = list(container = "body")),
-          
+            
             
             downloadButton('downloadData', 'Download'),
             
@@ -64,7 +65,7 @@ ui<-fluidPage(
             checkboxGroupInput("checkboxLOB", label = "Line of Business", 
                                c("ELL"="ELL","CGL" = "CGL","GLX/U"="GLX/U","BLX"="BLX","EBL"="EBL","LPL"="LPL","Public Schools"="Public Schools"),selected = c("ELL","CGL","GLX/U","BLX","EBL","LPL","Public Schools"),inline = FALSE),
             checkboxGroupInput("checkboxICode", label = "Institution Code", 
-                               c("IN"="IN","O" = "O","PS/SD"="PS/SD","U4/R4"="U4/R4","U2/R2"="U2/R2"),selected = c("IN","O","PS/SD","U4/R4","U2/R2"),inline = FALSE),
+                               c("Independent"="IN","Other" = "O","Public School/School District"="PS/SD","Public 4-Year"="U4","Private 4-Year"="R4","Public 2-Year/Private 2-Year"="U2/R2"),selected = c("IN","O","PS/SD","U4","R4","U2/R2"),inline = FALSE),
             checkboxGroupInput("checkboxInc_Claim", label = "Claim/Incident", 
                                c("Claim" = "C","Incident"="I"),selected = c("C","I"),inline = FALSE),
             checkboxGroupInput("checkboxLoss", label = "Incurred Loss?", 
@@ -73,13 +74,15 @@ ui<-fluidPage(
             width = 3),
         mainPanel(
             tabsetPanel(type = "tabs", 
-                        tabPanel("List of Claims", dataTableOutput(outputId = "table")), 
+                        tabPanel("List of Claims", 
+                                 tags$br(),
+                                 dataTableOutput(outputId = "table")), 
                         tabPanel("Summary",dataTableOutput(outputId = "table1")),
                         tabPanel("Plot", plotOutput("plot1"),plotOutput("plot2"))
-            )
+            ))
         )
     )
-        )
+        
 
 server<-function(input,output){
     datasetInput <- reactive({
@@ -146,7 +149,7 @@ server<-function(input,output){
         
         claiminfo3 <- claiminfo2[which(claiminfo2[,"xxtotal"] >0 & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob)& claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn)),]
         
-       # claiminfo3 <- subset(claiminfo2,claiminfo2[,"xxtotal"] >0 & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob)& claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn))
+        # claiminfo3 <- subset(claiminfo2,claiminfo2[,"xxtotal"] >0 & claiminfo2[,"LOSSDATE"]>=input$dates[1] & claiminfo2[,"LOSSDATE"]<=input$dates[2] & claiminfo2[,"LOBNEW"] %in% c(lob)& claiminfo2[,"INSTCODENEW"] %in% c(inst_code)& claiminfo2[,"INCIDENTORCLAIM"] %in% c(inc_claim)& claiminfo2[,"LossYN"] %in% c(lossyn))
         
         claiminfo3 <- rbind.data.frame(claiminfo3, claiminfo2[claiminfo2$Category %in% claiminfo3$Linked,])
         
@@ -170,8 +173,11 @@ server<-function(input,output){
         
         
     })
+
     
-    
+    output$dateinfo <- renderText({
+       print("Includes all data as of 9/20/2015")
+    })
     output$table <- renderDataTable({
         br()
         claiminfo<-datasetInput()
