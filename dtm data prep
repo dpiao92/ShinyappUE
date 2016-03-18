@@ -1,0 +1,203 @@
+library(tm) # Framework for text mining.
+library(SnowballC) # Provides wordStem() for stemming.
+library(dplyr) # Data preparation and pipes %>%.
+library(RColorBrewer) # Generate palette of colours for plots.
+library(ggplot2) # Plot word frequencies.
+library(scales) # Include commas in numbers.
+library(topicmodels);
+library(LDAvis);
+library(stringi)
+library(servr)
+
+memory.limit(size=44000) # We ran into some memory limit issues as the topic models require large amounts of memory;
+			 # this is just to prevent that
+
+
+t1 <- Sys.time()
+mydata <-read.csv("X:/Actuarial/Claims_Project/Claims_Notes5.csv")
+t2 <- Sys.time()
+
+reviews <- gsub("'", "", mydata$Note.Text)    # remove apostrophes
+reviews <- gsub("rtf1|ansicpg|ansi|deff0|deflang1|fonttbl|f0|fnil|fcharset|Arial|viewkind|uc1|pard|fs2|par ", " ", reviews)
+reviews <- gsub("[[:punct:]]", " ", reviews)  # replace punctuation with space
+reviews <- gsub("[[:digit:]]", " ", reviews)  # replace control characters with space
+reviews <- gsub("^[[:space:]]+", "", reviews) # remove whitespace at beginning of documents
+reviews <- gsub("[[:space:]]+$", "", reviews) # remove whitespace at end of documents
+reviews <- tolower(reviews)                   # force to lowercase
+
+
+# change abbreviations to full words, or change phrases into individual "words" to keep ideas together
+
+reviews <- gsub(" atty", " attorney", reviews)
+reviews <- gsub(" ack ", " acknowledgement ", reviews)
+#reviews <- gsub("breach of contract", "xbocx", reviews)
+reviews <- gsub(" boc ", " breach of contract ", reviews)
+reviews <- gsub(" clmt ", " claimant ", reviews)
+reviews <- gsub(" clmts ", " claimant ", reviews)
+reviews <- gsub(" clt ", " claimant ", reviews)
+reviews <- gsub(" cls ", "claimant ", reviews)
+reviews <- gsub(" date of loss ", " xdolx ", reviews)
+reviews <- gsub(" dol ", " xdolx ", reviews)
+reviews <- gsub(" dols ", " xdolx ", reviews)
+reviews <- gsub(" ded ", " deductible ", reviews)
+reviews <- gsub(" def ", " defense ", reviews)
+reviews <- gsub(" dc ", " defense counsel ", reviews)
+reviews <- gsub(" dcs ", " defense counsel ", reviews)
+#reviews <- gsub(" independent medical examination ", " ximex ximex ximex ", reviews)
+reviews <- gsub(" ime ", " independent medical examination ", reviews)
+reviews <- gsub(" ind ", " indemnity ", reviews)
+#reviews <- gsub(" intentional infliction of emotional distress ", " xiiedx xiiedx xiiedx xiiedx ", reviews)
+reviews <- gsub(" insd", " insured", reviews)
+reviews <- gsub(" iied ", " intentional infliction of emotional distress ", reviews)
+#reviews <- gsub(" negligent infliction of emotional distress ", " xniedx xniedx xniedx xniedx ", reviews)
+reviews <- gsub(" nied ", " negligent infliction of emotional distress ", reviews)
+reviews <- gsub(" ltr ", " letter ", reviews)
+reviews <- gsub(" lmtrc ", " left message to return call ", reviews)
+reviews <- gsub(" lmtcb ", " left message to call ", reviews)
+reviews <- gsub(" mtn ", " motion ", reviews)
+#reviews <- gsub("motion to dismiss", "mtd mtd", reviews)
+reviews <- gsub(" msg ", " message ", reviews)
+reviews <- gsub(" msgs ", " messages ", reviews)
+#reviews <- gsub(" msj ", " xmsjx xmsjx ", reviews)
+#reviews <- gsub(" msjs ", " xmsjx xmsjx ", reviews)
+reviews <- gsub(" npc ", " no probable cause ", reviews)
+#reviews <- gsub(" no probable cause ", " xnpcx xnpcx ", reviews)
+#reviews <- gsub(" no prob cause ", " xnpcx xnpcx ", reviews)
+#reviews <- gsub(" probable cause ", " xpcx xpcx ", reviews)
+reviews <- gsub(" dep ", "deposition", reviews)
+reviews <- gsub(" depo ", "deposition", reviews)
+reviews <- gsub(" depos ", " deposition ", reviews)
+#reviews <- gsub(" office of civil rights ", " ocr ocr ", reviews)
+reviews <- gsub(" opp ", " opposition ", reviews)
+reviews <- gsub(" oop ", " out of pocket ", reviews)
+#reviews <- gsub(" out of pocket ", " xoopx ", reviews)
+reviews <- gsub(" pc ", " plaintiff counsel ", reviews)
+reviews <- gsub(" pcs ", " plaintiff counsel ", reviews)
+reviews <- gsub(" pls ", " plaintiff ", reviews)
+reviews <- gsub(" plt ", " plaintiff ", reviews)
+reviews <- gsub(" pltf ", " plaintiff ", reviews)
+reviews <- gsub(" pltfs ", " plaintiff ", reviews)
+#reviews <- gsub("plan of attack", "poa", reviews)
+reviews <- gsub(" prof ", " professor ", reviews)
+#reviews <- gsub(" pro se ", " xprosex ", reviews)
+#reviews <- gsub("reservation of rights", "ror ror", reviews)
+reviews <- gsub(" recd ", " received ", reviews)
+reviews <- gsub(" rev ", " review ", reviews)
+reviews <- gsub(" recvd ", " received ", reviews)
+#reviews <- gsub(" right to sue ", " rts rts ", reviews)
+#reviews <- gsub(" statute of limitations ", " xsolx xsolx ", reviews)
+reviews <- gsub(" sol ", " statute of limitations ", reviews)
+reviews <- gsub(" tcw ", " telephone call with ", reviews)
+reviews <- gsub(" vm ", " voicemail ",reviews)
+reviews <- gsub(" wdc ", " with defense counsel ", reviews)
+
+t3 <- Sys.time()
+corp <- Corpus(VectorSource(reviews))     # turn data into corpus
+t4 <- Sys.time()
+
+corp <- tm_map(corp, stemDocument)        # stem words in corpus
+corp <- tm_map(corp, removeWords, stopwords("english")) # remove "stopwords" from corpus
+
+# remove custom "stopwords" from corpus
+
+trashwords <-read.csv("X:/Actuarial/Claims_Project/CustomStopWords.csv")
+corp <- tm_map(corp, removeWords, trashwords$stop) 
+corp <- tm_map(corp, removeWords, trashwords$maybe)
+corp <- tm_map(corp, removeWords, trashwords$aggressive)
+t5 <- Sys.time()
+
+t6 <- Sys.time()
+dtm <- DocumentTermMatrix(corp)           # turn corpus into document term matrix
+dim(dtm)
+dtm2 <- removeSparseTerms(dtm, 0.999)      # remove sparse terms
+dim(dtm2)
+
+dtm2<-as.matrix(dtm2)
+titles<-colnames(dtm2)
+
+mydata <-read.csv("X:/Actuarial/Claims_Project/Claims_Notes_Recent.csv")
+
+reviews <- gsub("'", "", mydata$Note.Text)    # remove apostrophes
+reviews <- gsub("rtf1|ansicpg|ansi|deff0|deflang1|fonttbl|f0|fnil|fcharset|Arial|viewkind|uc1|pard|fs2|par ", " ", reviews)
+reviews <- gsub("[[:punct:]]", " ", reviews)  # replace punctuation with space
+reviews <- gsub("[[:digit:]]", " ", reviews)  # replace control characters with space
+reviews <- gsub("^[[:space:]]+", "", reviews) # remove whitespace at beginning of documents
+reviews <- gsub("[[:space:]]+$", "", reviews) # remove whitespace at end of documents
+reviews <- tolower(reviews)                   # force to lowercase
+
+
+# change abbreviations to full words, or change phrases into individual "words" to keep ideas together
+
+reviews <- gsub(" atty", " attorney", reviews)
+reviews <- gsub(" ack ", " acknowledgement ", reviews)
+#reviews <- gsub("breach of contract", "xbocx", reviews)
+reviews <- gsub(" boc ", " breach of contract ", reviews)
+reviews <- gsub(" clmt ", " claimant ", reviews)
+reviews <- gsub(" clmts ", " claimant ", reviews)
+reviews <- gsub(" clt ", " claimant ", reviews)
+reviews <- gsub(" cls ", "claimant ", reviews)
+reviews <- gsub(" date of loss ", " xdolx ", reviews)
+reviews <- gsub(" dol ", " xdolx ", reviews)
+reviews <- gsub(" dols ", " xdolx ", reviews)
+reviews <- gsub(" ded ", " deductible ", reviews)
+reviews <- gsub(" def ", " defense ", reviews)
+reviews <- gsub(" dc ", " defense counsel ", reviews)
+reviews <- gsub(" dcs ", " defense counsel ", reviews)
+#reviews <- gsub(" independent medical examination ", " ximex ximex ximex ", reviews)
+reviews <- gsub(" ime ", " independent medical examination ", reviews)
+reviews <- gsub(" ind ", " indemnity ", reviews)
+#reviews <- gsub(" intentional infliction of emotional distress ", " xiiedx xiiedx xiiedx xiiedx ", reviews)
+reviews <- gsub(" insd", " insured", reviews)
+reviews <- gsub(" iied ", " intentional infliction of emotional distress ", reviews)
+#reviews <- gsub(" negligent infliction of emotional distress ", " xniedx xniedx xniedx xniedx ", reviews)
+reviews <- gsub(" nied ", " negligent infliction of emotional distress ", reviews)
+reviews <- gsub(" ltr ", " letter ", reviews)
+reviews <- gsub(" lmtrc ", " left message to return call ", reviews)
+reviews <- gsub(" lmtcb ", " left message to call ", reviews)
+reviews <- gsub(" mtn ", " motion ", reviews)
+#reviews <- gsub("motion to dismiss", "mtd mtd", reviews)
+reviews <- gsub(" msg ", " message ", reviews)
+reviews <- gsub(" msgs ", " messages ", reviews)
+#reviews <- gsub(" msj ", " xmsjx xmsjx ", reviews)
+#reviews <- gsub(" msjs ", " xmsjx xmsjx ", reviews)
+reviews <- gsub(" npc ", " no probable cause ", reviews)
+#reviews <- gsub(" no probable cause ", " xnpcx xnpcx ", reviews)
+#reviews <- gsub(" no prob cause ", " xnpcx xnpcx ", reviews)
+#reviews <- gsub(" probable cause ", " xpcx xpcx ", reviews)
+reviews <- gsub(" dep ", "deposition", reviews)
+reviews <- gsub(" depo ", "deposition", reviews)
+reviews <- gsub(" depos ", " deposition ", reviews)
+#reviews <- gsub(" office of civil rights ", " ocr ocr ", reviews)
+reviews <- gsub(" opp ", " opposition ", reviews)
+reviews <- gsub(" oop ", " out of pocket ", reviews)
+#reviews <- gsub(" out of pocket ", " xoopx ", reviews)
+reviews <- gsub(" pc ", " plaintiff counsel ", reviews)
+reviews <- gsub(" pcs ", " plaintiff counsel ", reviews)
+reviews <- gsub(" pls ", " plaintiff ", reviews)
+reviews <- gsub(" plt ", " plaintiff ", reviews)
+reviews <- gsub(" pltf ", " plaintiff ", reviews)
+reviews <- gsub(" pltfs ", " plaintiff ", reviews)
+#reviews <- gsub("plan of attack", "poa", reviews)
+reviews <- gsub(" prof ", " professor ", reviews)
+#reviews <- gsub(" pro se ", " xprosex ", reviews)
+#reviews <- gsub("reservation of rights", "ror ror", reviews)
+reviews <- gsub(" recd ", " received ", reviews)
+reviews <- gsub(" rev ", " review ", reviews)
+reviews <- gsub(" recvd ", " received ", reviews)
+#reviews <- gsub(" right to sue ", " rts rts ", reviews)
+#reviews <- gsub(" statute of limitations ", " xsolx xsolx ", reviews)
+reviews <- gsub(" sol ", " statute of limitations ", reviews)
+reviews <- gsub(" tcw ", " telephone call with ", reviews)
+reviews <- gsub(" vm ", " voicemail ",reviews)
+reviews <- gsub(" wdc ", " with defense counsel ", reviews)
+
+corp <- Corpus(VectorSource(reviews)) 
+t7 <- Sys.time()
+titles2<-stemCompletion(titles, corp,type="prevalent")
+t8 <- Sys.time()
+
+
+dtm_mat<-as.matrix(dtm)
+dtm_mat2<-cbind(mydata$Claim.Number,dtm2)
+claiminfo2<-aggregate(dtm_mat2[,2:2480], by=list(Category=dtm_mat2[,1]), FUN=sum)
+claiminfo<-by(dtm_mat2[,c(2:length(dtm_mat2))], dtm_mat2[,1],FUN=colSums)
