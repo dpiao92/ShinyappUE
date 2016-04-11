@@ -115,7 +115,7 @@ dtm_mat<-as.matrix(inspect(dtm[,c("gay","lesbian","lgbt","ident","transgend","st
 dtm_mat2<-cbind(mydata$Claim.Number,dtm_mat,dtm2)
 dtm2<-as.matrix(dtm_mat2)
 claiminfo2<-aggregate(dtm2[,2:dim(dtm2)[2]], by=list(Category=dtm2[,1]), FUN=sum)
-write.csv(claiminfo2,"X:/Actuarial/Claims_Project/claiminfo2binMarch2016.csv")
+#write.csv(claiminfo2,"X:/Actuarial/Claims_Project/claiminfo2binMarch2016.csv")
 
 titles<-colnames(dtm2)
 
@@ -199,4 +199,4 @@ corp <- Corpus(VectorSource(reviews))
 t7 <- Sys.time()
 titles2<-stemCompletion(titles, corp,type="prevalent")
 t8 <- Sys.time()
-
+#write.csv(titles2,"X:/Actuarial/Claims_Project/titlesMarch2016.csv")
