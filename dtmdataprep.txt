@@ -14,7 +14,7 @@ memory.limit(size=44000) # We ran into some memory limit issues as the topic mod
 
 
 t1 <- Sys.time()
-mydata <-read.csv("X:/Actuarial/Claims_Project/Claims_Notes5.csv")
+mydata <-read.csv("X:/Actuarial/Claims_Project/Claims_Notes6.csv")
 t2 <- Sys.time()
 
 reviews <- gsub("'", "", mydata$Note.Text)    # remove apostrophes
