@@ -116,7 +116,6 @@ dtm_mat2<-cbind(mydata$Claim.Number,dtm_mat,dtm2)
 dtm2<-as.matrix(dtm_mat2)
 claiminfo2<-aggregate(dtm2[,2:dim(dtm2)[2]], by=list(Category=dtm_mat2[,1]), FUN=sum)
 
-dtm2<-as.matrix(dtm2)
 titles<-colnames(dtm2)
 
 mydata <-read.csv("X:/Actuarial/Claims_Project/Claims_Notes_Recent.csv")
