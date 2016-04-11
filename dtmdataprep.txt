@@ -114,7 +114,7 @@ dim(dtm2)
 dtm_mat<-as.matrix(inspect(dtm[,c("gay","lesbian","lgbt","ident","transgend","stereotyp","homosexu","transsexu")]))
 dtm_mat2<-cbind(mydata$Claim.Number,dtm_mat,dtm2)
 dtm2<-as.matrix(dtm_mat2)
-claiminfo2<-aggregate(dtm2[,2:dim(dtm2)[2]], by=list(Category=dtm_mat2[,1]), FUN=sum)
+claiminfo2<-aggregate(dtm2[,2:dim(dtm2)[2]], by=list(Category=dtm2[,1]), FUN=sum)
 
 titles<-colnames(dtm2)
 
