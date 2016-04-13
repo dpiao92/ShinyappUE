@@ -9,4 +9,9 @@ Dates in ClaimBin file should be formatted 01/01/16 in the csv
 dtm_mat<-as.matrix(inspect(dtm[,c("gay","lesbian","lgbt","ident","transgend","stereotyp","homosexu","transsexu")]))
 dtm_mat2<-cbind(mydata$Claim.Number,dtm_mat)
 claiminfo2<-aggregate(dtm_mat2[,2:2480], by=list(Category=dtm_mat2[,1]), FUN=sum)
-#make sure to replace all values greater than zero as one
+
+make sure to replace all values greater than zero as one
+
+InstitutionName column should be SCHOOLNAME
+
+PDOX spells out Incident or Claims sometimes instead of I or C
