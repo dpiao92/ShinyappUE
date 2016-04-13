@@ -7,7 +7,7 @@ library(data.table)
 library(dplyr)
 library(shinyBS)
 
-claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/claiminfo2bin.csv")
+claiminfo2 <-read.csv("X:/Actuarial/Claims_Project/claiminfo2binMarch20162.csv")
 linked <- read.csv("X:/Actuarial/Claims_Project/Excess_to_primary.csv")
 claiminfo2$LOSSDATE<-as.Date(claiminfo2[,"LOSSDATE"],"%m/%d/%y")
 claiminfo2$LIMIT<-paste("$",format(claiminfo2$LIMIT, big.mark=","),sep="")
