@@ -17,13 +17,14 @@ t1 <- Sys.time()
 mydata <-read.csv("X:/Actuarial/Claims_Project/Claims_Notes6.csv")
 t2 <- Sys.time()
 
+reviews <- tolower(reviews)                   # force to lowercase
 reviews <- gsub("'", "", mydata$Note.Text)    # remove apostrophes
 reviews <- gsub("rtf1|ansicpg|ansi|deff0|deflang1|fonttbl|f0|fnil|fcharset|Arial|viewkind|uc1|pard|fs2|par ", " ", reviews)
 reviews <- gsub("[[:punct:]]", " ", reviews)  # replace punctuation with space
+reviews <- gsub("title 9|title nine|title ix", "title_ix", reviews)
 reviews <- gsub("[[:digit:]]", " ", reviews)  # replace control characters with space
 reviews <- gsub("^[[:space:]]+", "", reviews) # remove whitespace at beginning of documents
 reviews <- gsub("[[:space:]]+$", "", reviews) # remove whitespace at end of documents
-reviews <- tolower(reviews)                   # force to lowercase
 
 
 # change abbreviations to full words, or change phrases into individual "words" to keep ideas together
