@@ -112,7 +112,7 @@ dtm <- DocumentTermMatrix(corp)           # turn corpus into document term matri
 dim(dtm)
 dtm2 <- removeSparseTerms(dtm, 0.999)      # remove sparse terms
 dim(dtm2)
-dtm_mat<-as.matrix(inspect(dtm[,c("gay","lesbian","lgbt","ident","transgend","stereotyp","homosexu","transsexu")]))
+dtm_mat<-as.matrix(inspect(dtm[,c("gay","lesbian","lgbt","ident","transgend","stereotyp","homosexu","transsexu","hate")]))
 dtm_mat2<-cbind(mydata$Claim.Number,dtm_mat,dtm2)
 dtm2<-as.matrix(dtm_mat2)
 claiminfo2<-aggregate(dtm2[,2:dim(dtm2)[2]], by=list(Category=dtm2[,1]), FUN=sum)
